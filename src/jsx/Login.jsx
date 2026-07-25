@@ -63,8 +63,12 @@ export default function Login() {
             },
             credentials: "include"
         })
+        if (response.status === 401) {
+            setMessage('Invalid credentials')
+            return
+        }
         if (!response.ok) {
-            setMessage('Login failed')
+            setMessage('Something went wrong')
             return
         }
         const checkResponse = await fetchMe()
