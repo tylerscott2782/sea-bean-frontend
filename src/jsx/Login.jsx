@@ -5,7 +5,6 @@ export default function Login() {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [message, setMessage] = useState('')
-    const [testResultMessage, setTestResultMessage] = useState('')
     const navigate = useNavigate()
 
     async function fetchMe() {
@@ -19,12 +18,14 @@ export default function Login() {
         const controller = new AbortController();
 
         async function checkAuthStatus() {
-            const response = await fetchMe()
+            const response = await fetch('https://localhost:7125/auth/me', {
+                credentials: "include"
+            })
             if (response.ok) {
-                navigate('/dashboard')
+                navigate('/home')
             }
         }
-        
+
         checkAuthStatus()
 
         return () => controller.abort()
@@ -62,15 +63,13 @@ export default function Login() {
             },
             credentials: "include"
         })
-        setMessage(response.status)
-    }
-
-    async function handleTestButtonClick() {
-        const response = await fetchMe()
-        if (response.ok) {
-            setTestResultMessage('ok')
-        } else {
-            setTestResultMessage(':[')
+        if (!response.ok) {
+            setMessage('Login failed')
+            return
+        }
+        const checkResponse = await fetchMe()
+        if (checkResponse.ok) {
+            navigate('/home')
         }
     }
 
@@ -80,9 +79,6 @@ export default function Login() {
         <input placeholder="Password" type="password" value={password} onChange={handleChangePassword} />
         <button onClick={handleButtonClick}>Submit</button>
         <div>{message}</div>
-        <br />
-        <button onClick={handleTestButtonClick}>Test Connection</button>
-        <div>{testResultMessage}</div>
         <br />
         <Link to="/register">Register</Link>
     </>
