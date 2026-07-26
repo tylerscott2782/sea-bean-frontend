@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+
 export default function Login() {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -8,7 +10,7 @@ export default function Login() {
     const navigate = useNavigate()
 
     async function fetchMe() {
-        const response = await fetch('https://localhost:7125/auth/me', {
+        const response = await fetch(`${API_BASE_URL}/auth/me`, {
             credentials: "include"
         })
         return response
@@ -18,9 +20,7 @@ export default function Login() {
         const controller = new AbortController();
 
         async function checkAuthStatus() {
-            const response = await fetch('https://localhost:7125/auth/me', {
-                credentials: "include"
-            })
+            const response = await fetchMe()
             if (response.ok) {
                 navigate('/home')
             }
@@ -52,7 +52,7 @@ export default function Login() {
         }
         setMessage('')
 
-        const response = await fetch('https://localhost:7125/auth/login', {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
             method: "POST",
             body: JSON.stringify({
                 username,

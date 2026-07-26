@@ -1,12 +1,13 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+
 export default function Register() {
     const [username, setUsername] = useState('')
     const [password1, setPassword1] = useState('')
     const [password2, setPassword2] = useState('')
     const [message, setMessage] = useState('')
-    const [accountCreationSuccessful, setAccountCreationSuccessful] = useState(false)
 
     function handleChangeUsername(e) {
         const value = e.target.value
@@ -37,7 +38,7 @@ export default function Register() {
             return
         }
         setMessage('')
-        const response = await fetch('https://localhost:7125/auth/register', {
+        const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: 'POST',
             body: JSON.stringify({
                 username,
@@ -50,7 +51,6 @@ export default function Register() {
 
         if (response.ok) {
             setMessage('Account Created Successfully! Please return to the login page below.')
-            setAccountCreationSuccessful(true)
         } else if (response.status === 409) {
             const conflictMessage = await response.text()
             setMessage(conflictMessage)
@@ -65,8 +65,6 @@ export default function Register() {
         <button onClick={handleCreateAccountButtonClick}>Create Account</button>
         <div>{message}</div>
         <br />
-        {accountCreationSuccessful ?
-            <Link to="/login">Login</Link> :
-            null}
+        <Link to="/login">Back to Login</Link>
     </>
 }
