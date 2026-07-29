@@ -3,44 +3,136 @@ import { useNavigate } from "react-router-dom"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
-// function FileUploadTest() {
-//     const [fileUploadMessage, setFileUploadMessage] = useState('')
-//     const [imgSrc, setImgSrc] = useState('http://localhost:5093/storedFile/download/babe6c36-60e0-40f3-9d96-c60bac9cc2e7');
+function FileUploadForm({ handleFileUploaded }) {
+    const [isUploading, setIsUploading] = useState(false)
 
-//     async function onChangeFileInput(e) {
-//         const file = e.target.files[0];
-//         if (!file) return
+    async function onChangeFileInput(e) {
+        const file = e.target.files[0]
+        if (!file) return
 
-//         const formData = new FormData();
-//         formData.append('file', file)
+        const formData = new FormData()
+        formData.append('file', file)
 
-//         setFileUploadMessage('Uploading...')
-//         const response = await fetch(`${API_BASE_URL}/storedFile`, {
-//             method: 'POST',
-//             credentials: "include",
-//             body: formData,
-//         })
+        setIsUploading(true)
+        const response = await fetch(`${API_BASE_URL}/storedFile`, {
+            method: 'POST',
+            credentials: "include",
+            body: formData
+        })
+        setIsUploading(false)
 
-//         if (!response.ok) {
-//             setFileUploadMessage('Something went wrong')
-//         }
+        if (!response.ok) return
 
-//         setFileUploadMessage('Uploaded')
+        const storedFile = await response.json()
+        handleFileUploaded?.(storedFile)
+    }
 
-//         const data = await response.json()
-//         setImgSrc(`${API_BASE_URL}/storedFile/download/${data.id}`)
-//     }
+    if (isUploading) {
+        return <>
+            Uploading...
+        </>
+    }
 
-//     return <>
-//         <input type="file" onChange={onChangeFileInput} />
-//         <div>{fileUploadMessage}</div>
-//         <img src={imgSrc} />
-//     </>
-// }
+    return <>
+        <input type="file" onChange={onChangeFileInput} />
+    </>
+}
 
-function SeaBeanEntries() {
+function SeaBeanEntryForm({ handleSeaBeanEntryCreated }) {
+    const [seaBeanId, setSeaBeanId] = useState('')
+    const [notes, setNotes] = useState('')
+    const [latitude, setLatitude] = useState('')
+    const [longitude, setLongitude] = useState('')
+    const [entryDate, setEntryDate] = useState(new Date().toISOString())
+    const [storedFiles, setStoredFiles] = useState([])
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
+    function clearFields() {
+        setSeaBeanId('')
+        setNotes('')
+        setLatitude('')
+        setLongitude('')
+        setEntryDate(new Date().toISOString())
+        setStoredFiles([])
+    }
+
+    function handleClickUseLocation() {
+        navigator.geolocation.getCurrentPosition((position) => {
+            setLatitude(position.coords.latitude)
+            setLongitude(position.coords.longitude)
+        })
+    }
+
+    function handleFileUploaded(storedFile) {
+        setStoredFiles([...storedFiles, storedFile])
+    }
+
+    async function handleClickSubmit() {
+        setIsSubmitting(true)
+        const response = await fetch(`${API_BASE_URL}/seaBeanEntry`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                seaBeanId,
+                notes,
+                latitude,
+                longitude,
+                entryDate,
+                storedFileIds: storedFiles.map(sf => sf.id)
+            })
+        })
+        setIsSubmitting(false)
+
+        if (!response.ok) return
+        clearFields()
+
+        const responseJson = await response.json()
+        handleSeaBeanEntryCreated?.(responseJson)
+    }
+
+    if (isSubmitting) {
+        return <>
+            <div>Submitting your entry...</div>
+        </>
+    }
+
+    return <>
+        <div>
+            <div>SeaBeanId:</div>
+            <input type="text" value={seaBeanId} onChange={(e) => setSeaBeanId(e.target.value)} />
+            <div>Notes:</div>
+            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
+            <div>Latitude:</div>
+            <input type="number" value={latitude} onChange={(e) => setLatitude(e.target.value)} />
+            <div>Longitude:</div>
+            <input type="number" value={longitude} onChange={(e) => setLongitude(e.target.value)} />
+            <button onClick={handleClickUseLocation}>Use my location</button>
+            <div>EntryDate:</div>
+            <input type="text" value={entryDate} onChange={(e) => setEntryDate(e.target.value)} />
+            <br />
+            <div>Files:</div>
+            {storedFiles.map((storedFile) => {
+                return (
+                    <img
+                        key={storedFile.id}
+                        src={`${API_BASE_URL}/storedFile/download/${storedFile.id}`}
+                    />
+                )
+            })}
+            <FileUploadForm 
+                handleFileUploaded={handleFileUploaded}
+            />
+            <br />
+            <button onClick={handleClickSubmit}>Submit Sea Bean Entry</button>
+        </div>
+    </>
+}
+
+function SeaBeanEntryList({ seaBeanEntries, setSeaBeanEntries }) {
     const [isLoading, setIsLoading] = useState(true)
-    const [seaBeanEntries, setSeaBeanEntries] = useState([])
 
     useEffect(() => {
         async function getSeaBeanEntries() {
@@ -53,7 +145,7 @@ function SeaBeanEntries() {
         }
 
         getSeaBeanEntries()
-    }, [])
+    }, [setSeaBeanEntries])
 
     if (isLoading) {
         return <>
@@ -63,32 +155,34 @@ function SeaBeanEntries() {
 
     return <>
         {seaBeanEntries.map((seaBeanEntry) => {
-            return <>
-                <div key={seaBeanEntry.id}>
+            return (
+                <div style={({ marginBottom: "20px" })} key={seaBeanEntry.id}>
                     <div>Id: {seaBeanEntry.id}</div>
                     <div>SeaBeanId: {seaBeanEntry.seaBeanId}</div>
                     <div>Notes: {seaBeanEntry.notes}</div>
                     <div>Latitude: {seaBeanEntry.latitude}</div>
                     <div>Longitude: {seaBeanEntry.longitude}</div>
-                    <div>DateCreated: {seaBeanEntry.seaBeanId}</div>
-                    <div>EntryDate: {seaBeanEntry.seaBeanId}</div>
+                    <div>DateCreated: {seaBeanEntry.dateCreated}</div>
+                    <div>EntryDate: {seaBeanEntry.entryDate}</div>
                     <div>
                         {seaBeanEntry.storedFileIds?.map((storedFileId) => {
-                            return <>
-                                <img 
+                            return (
+                                <img
+                                    key={storedFileId}
                                     loading="lazy"
                                     src={`${API_BASE_URL}/storedFile/download/${storedFileId}`}
                                 />
-                            </>
+                            )
                         })}
                     </div>
                 </div>
-            </>
+            )
         })}
     </>
 }
 
 export default function Home() {
+    const [seaBeanEntries, setSeaBeanEntries] = useState([])
     const navigate = useNavigate()
 
     async function handleClickLogoutButton() {
@@ -102,9 +196,20 @@ export default function Home() {
         }
     }
 
+    function handleSeaBeanEntryCreated(seaBeanEntry) {
+        setSeaBeanEntries([seaBeanEntry, ...seaBeanEntries])
+    }
+
     return <>
         <button onClick={handleClickLogoutButton}>Logout</button>
         <br />
-        <SeaBeanEntries />
+        <SeaBeanEntryForm
+            handleSeaBeanEntryCreated={handleSeaBeanEntryCreated}
+        />
+        <br />
+        <SeaBeanEntryList
+            seaBeanEntries={seaBeanEntries}
+            setSeaBeanEntries={setSeaBeanEntries}
+        />
     </>
 }
