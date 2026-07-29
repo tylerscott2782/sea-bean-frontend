@@ -3,6 +3,29 @@ import { useNavigate } from "react-router-dom"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
+function SeaBeanSelector({ seaBeans, handleSeaBeanSelected }) {
+    function onChangeSelect(e) {
+        const id = e.target.value
+        const selectedSeaBean = seaBeans.find(sb => sb.id === id)
+        handleSeaBeanSelected?.(selectedSeaBean)
+    }
+
+    return <>
+        <select onChange={onChangeSelect}>
+            {seaBeans.map((seaBean) => {
+                return (
+                    <option
+                        key={seaBean.id}
+                        value={seaBean.id}
+                    >
+                        {seaBean.name}
+                    </option>
+                )
+            })}
+        </select>
+    </>
+}
+
 function FileUploadForm({ handleFileUploaded }) {
     const [isUploading, setIsUploading] = useState(false)
 
@@ -38,7 +61,7 @@ function FileUploadForm({ handleFileUploaded }) {
     </>
 }
 
-function SeaBeanEntryForm({ handleSeaBeanEntryCreated }) {
+function SeaBeanEntryForm({ seaBeans, handleSeaBeanEntryCreated }) {
     const [seaBeanId, setSeaBeanId] = useState('')
     const [notes, setNotes] = useState('')
     const [latitude, setLatitude] = useState('')
@@ -101,8 +124,11 @@ function SeaBeanEntryForm({ handleSeaBeanEntryCreated }) {
 
     return <>
         <div>
-            <div>SeaBeanId:</div>
-            <input type="text" value={seaBeanId} onChange={(e) => setSeaBeanId(e.target.value)} />
+            <div>Sea Bean:</div>
+            <SeaBeanSelector
+                seaBeans={seaBeans}
+                handleSeaBeanSelected={(seaBean) => setSeaBeanId(seaBean.id)}
+            />
             <div>Notes:</div>
             <textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
             <div>Latitude:</div>
@@ -110,7 +136,7 @@ function SeaBeanEntryForm({ handleSeaBeanEntryCreated }) {
             <div>Longitude:</div>
             <input type="number" value={longitude} onChange={(e) => setLongitude(e.target.value)} />
             <button onClick={handleClickUseLocation}>Use my location</button>
-            <div>EntryDate:</div>
+            <div>Entry Date:</div>
             <input type="text" value={entryDate} onChange={(e) => setEntryDate(e.target.value)} />
             <br />
             <div>Files:</div>
@@ -122,7 +148,7 @@ function SeaBeanEntryForm({ handleSeaBeanEntryCreated }) {
                     />
                 )
             })}
-            <FileUploadForm 
+            <FileUploadForm
                 handleFileUploaded={handleFileUploaded}
             />
             <br />
@@ -131,7 +157,7 @@ function SeaBeanEntryForm({ handleSeaBeanEntryCreated }) {
     </>
 }
 
-function SeaBeanEntryList({ seaBeanEntries, setSeaBeanEntries }) {
+function SeaBeanEntryList({ seaBeanEntries, setSeaBeanEntries, seaBeans }) {
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
@@ -158,12 +184,12 @@ function SeaBeanEntryList({ seaBeanEntries, setSeaBeanEntries }) {
             return (
                 <div style={({ marginBottom: "20px" })} key={seaBeanEntry.id}>
                     <div>Id: {seaBeanEntry.id}</div>
-                    <div>SeaBeanId: {seaBeanEntry.seaBeanId}</div>
+                    <div>Sea Bean: {seaBeans?.find(sb => sb.id === seaBeanEntry.seaBeanId)?.name}</div>
                     <div>Notes: {seaBeanEntry.notes}</div>
                     <div>Latitude: {seaBeanEntry.latitude}</div>
                     <div>Longitude: {seaBeanEntry.longitude}</div>
-                    <div>DateCreated: {seaBeanEntry.dateCreated}</div>
-                    <div>EntryDate: {seaBeanEntry.entryDate}</div>
+                    <div>Date Created: {seaBeanEntry.dateCreated}</div>
+                    <div>Entry Date: {seaBeanEntry.entryDate}</div>
                     <div>
                         {seaBeanEntry.storedFileIds?.map((storedFileId) => {
                             return (
@@ -183,7 +209,20 @@ function SeaBeanEntryList({ seaBeanEntries, setSeaBeanEntries }) {
 
 export default function Home() {
     const [seaBeanEntries, setSeaBeanEntries] = useState([])
+    const [seaBeans, setSeaBeans] = useState([])
     const navigate = useNavigate()
+
+    useEffect(() => {
+        async function getSeaBeans() {
+            const response = await fetch(`${API_BASE_URL}/seaBean`, {
+                credentials: "include"
+            })
+            const responseJson = await response.json();
+            setSeaBeans(responseJson)
+        }
+
+        getSeaBeans()
+    }, [])
 
     async function handleClickLogoutButton() {
         const response = await fetch(`${API_BASE_URL}/auth/logout`, {
@@ -205,9 +244,11 @@ export default function Home() {
         <br />
         <SeaBeanEntryForm
             handleSeaBeanEntryCreated={handleSeaBeanEntryCreated}
+            seaBeans={seaBeans}
         />
         <br />
         <SeaBeanEntryList
+            seaBeans={seaBeans}
             seaBeanEntries={seaBeanEntries}
             setSeaBeanEntries={setSeaBeanEntries}
         />
