@@ -1,7 +1,18 @@
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+
+function ImageDiv({ storedFileId }) {
+    return (
+        <div style={{ width: "200px", aspectRatio: "1" }}>
+            <img
+                src={`${API_BASE_URL}/storedFile/download/${storedFileId}`}
+                loading="lazy"
+                style={{ width: "100%" }}
+            />
+        </div>
+    )
+}
 
 function SeaBeanSelector({ seaBeans, handleSeaBeanSelected }) {
     function onChangeSelect(e) {
@@ -57,7 +68,7 @@ function FileUploadForm({ handleFileUploaded }) {
     }
 
     return <>
-        <input type="file" onChange={onChangeFileInput} />
+        <input type="file" accept="image/*" onChange={onChangeFileInput} />
     </>
 }
 
@@ -142,10 +153,7 @@ function SeaBeanEntryForm({ seaBeans, handleSeaBeanEntryCreated }) {
             <div>Files:</div>
             {storedFiles.map((storedFile) => {
                 return (
-                    <img
-                        key={storedFile.id}
-                        src={`${API_BASE_URL}/storedFile/download/${storedFile.id}`}
-                    />
+                    <ImageDiv key={storedFile.id} storedFileId={storedFile.id} />
                 )
             })}
             <FileUploadForm
@@ -190,13 +198,12 @@ function SeaBeanEntryList({ seaBeanEntries, setSeaBeanEntries, seaBeans }) {
                     <div>Longitude: {seaBeanEntry.longitude}</div>
                     <div>Date Created: {seaBeanEntry.dateCreated}</div>
                     <div>Entry Date: {seaBeanEntry.entryDate}</div>
-                    <div>
+                    <div style={{ display: "flex" }}>
                         {seaBeanEntry.storedFileIds?.map((storedFileId) => {
                             return (
-                                <img
+                                <ImageDiv
                                     key={storedFileId}
-                                    loading="lazy"
-                                    src={`${API_BASE_URL}/storedFile/download/${storedFileId}`}
+                                    storedFileId={storedFileId}
                                 />
                             )
                         })}
@@ -210,7 +217,6 @@ function SeaBeanEntryList({ seaBeanEntries, setSeaBeanEntries, seaBeans }) {
 export default function Home() {
     const [seaBeanEntries, setSeaBeanEntries] = useState([])
     const [seaBeans, setSeaBeans] = useState([])
-    const navigate = useNavigate()
 
     useEffect(() => {
         async function getSeaBeans() {
@@ -224,24 +230,11 @@ export default function Home() {
         getSeaBeans()
     }, [])
 
-    async function handleClickLogoutButton() {
-        const response = await fetch(`${API_BASE_URL}/auth/logout`, {
-            method: "POST",
-            credentials: "include"
-        })
-
-        if (response.ok) {
-            navigate('/')
-        }
-    }
-
     function handleSeaBeanEntryCreated(seaBeanEntry) {
         setSeaBeanEntries([seaBeanEntry, ...seaBeanEntries])
     }
 
     return <>
-        <button onClick={handleClickLogoutButton}>Logout</button>
-        <br />
         <SeaBeanEntryForm
             handleSeaBeanEntryCreated={handleSeaBeanEntryCreated}
             seaBeans={seaBeans}
