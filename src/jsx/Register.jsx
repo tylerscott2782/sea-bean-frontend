@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
-import fetchRetry from "./fetchRetry"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -39,7 +38,7 @@ export default function Register() {
             return
         }
         setMessage('')
-        const response = await fetchRetry(`${API_BASE_URL}/auth/register`, {
+        const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: 'POST',
             body: JSON.stringify({
                 username,

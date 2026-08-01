@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import fetchRetry from "./fetchRetry"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -49,7 +48,7 @@ function FileUploadForm({ handleFileUploaded }) {
         formData.append('file', file)
 
         setIsUploading(true)
-        const response = await fetchRetry(`${API_BASE_URL}/storedFile`, {
+        const response = await fetch(`${API_BASE_URL}/storedFile`, {
             method: 'POST',
             credentials: "include",
             body: formData
@@ -104,7 +103,7 @@ function SeaBeanEntryForm({ seaBeans, handleSeaBeanEntryCreated }) {
 
     async function handleClickSubmit() {
         setIsSubmitting(true)
-        const response = await fetchRetry(`${API_BASE_URL}/seaBeanEntry`, {
+        const response = await fetch(`${API_BASE_URL}/seaBeanEntry`, {
             method: "POST",
             credentials: "include",
             headers: {
@@ -171,7 +170,7 @@ function SeaBeanEntryList({ seaBeanEntries, setSeaBeanEntries, seaBeans }) {
 
     useEffect(() => {
         async function getSeaBeanEntries() {
-            const response = await fetchRetry(`${API_BASE_URL}/seaBeanEntry`, {
+            const response = await fetch(`${API_BASE_URL}/seaBeanEntry`, {
                 credentials: "include"
             })
             const responseJson = await response.json()
@@ -221,7 +220,7 @@ export default function Home() {
 
     useEffect(() => {
         async function getSeaBeans() {
-            const response = await fetchRetry(`${API_BASE_URL}/seaBean`, {
+            const response = await fetch(`${API_BASE_URL}/seaBean`, {
                 credentials: "include"
             })
             const responseJson = await response.json();

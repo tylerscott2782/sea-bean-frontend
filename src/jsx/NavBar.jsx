@@ -1,5 +1,4 @@
 import { Link, useNavigate, Outlet } from "react-router-dom"
-import fetchRetry from "./fetchRetry"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -7,7 +6,7 @@ export default function NavBar() {
     const navigate = useNavigate()
 
     async function handleClickLogoutButton() {
-        const response = await fetchRetry(`${API_BASE_URL}/auth/logout`, {
+        const response = await fetch(`${API_BASE_URL}/auth/logout`, {
             method: "POST",
             credentials: "include"
         })
