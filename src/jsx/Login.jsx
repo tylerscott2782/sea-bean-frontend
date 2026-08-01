@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import fetchRetry from "./fetchRetry"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -10,7 +11,7 @@ export default function Login() {
     const navigate = useNavigate()
 
     async function fetchMe() {
-        const response = await fetch(`${API_BASE_URL}/auth/me`, {
+        const response = await fetchRetry(`${API_BASE_URL}/auth/me`, {
             credentials: "include"
         })
         return response
@@ -52,7 +53,7 @@ export default function Login() {
         }
         setMessage('')
 
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        const response = await fetchRetry(`${API_BASE_URL}/auth/login`, {
             method: "POST",
             body: JSON.stringify({
                 username,
