@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" },
-    { "source": "/api/:path*", "destination": "https://desktop-m3v9l6r.taila686ad.ts.net/:path*" }
+    { "source": "/api/:path*", "destination": "https://desktop-m3v9l6r.taila686ad.ts.net/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
