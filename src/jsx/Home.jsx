@@ -191,11 +191,11 @@ function SeaBeanEntryList({ users, seaBeanEntries, setSeaBeanEntries, seaBeans }
             }).format(entryDate)
 
             return (
-                <div style={({ marginBottom: "25px", boxShadow: "3px 3px 6px #00000030;", backgroundColor: "#1b1d21", padding: "20px", borderRadius: "10px" })} key={seaBeanEntry.id}>
-                    <div style={{ display: "flex", gap: "20px" }}>
-                        <div style={{ height: "40px", aspectRatio: "1", borderRadius: "50px", backgroundColor: "gray" }}></div>
-                        <div>
-                            <div style={{ fontSize: "16px", marginTop: "10px" }}>
+                <div style={({ marginBottom: "25px", boxShadow: "3px 3px 6px #00000030;", backgroundColor: "#1b1d21", padding: "15px 25px 20px 15px", borderRadius: "10px" })} key={seaBeanEntry.id}>
+                    <div style={{ display: "flex", gap: "12px" }}>
+                        <div style={{ height: "38px", aspectRatio: "1", borderRadius: "50px", backgroundColor: "gray" }}></div>
+                        <div style={{ width: "100%" }}>
+                            <div style={{ fontSize: "16px", marginTop: "8px" }}>
                                 <strong>{creator.username}</strong> found a <strong>{seaBean.name}</strong> on <strong>{entryDateString}</strong>
                             </div>
                             {!!seaBeanEntry.notes && <>
@@ -274,7 +274,7 @@ export default function Home() {
     }
 
     return <>
-    <div style={{fontSize: "30px"}}>Home</div>
+        <div style={{ fontSize: "30px" }}>Home</div>
         <SeaBeanEntryForm
             key={seaBeanEntryFormKey}
             handleSeaBeanEntryCreated={handleSeaBeanEntryCreated}
