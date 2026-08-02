@@ -8,10 +8,11 @@ import NavBar from './NavBar'
 
 function App() {
   return <>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Playpen+Sans:wght@100..800&display=swap" rel="stylesheet"></link>
-    
+
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
