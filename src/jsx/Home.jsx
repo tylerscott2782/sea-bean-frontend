@@ -192,24 +192,31 @@ function SeaBeanEntryList({ users, seaBeanEntries, setSeaBeanEntries, seaBeans }
 
             return (
                 <div style={({ marginBottom: "25px", boxShadow: "3px 3px 6px #00000030;", backgroundColor: "#1b1d21", padding: "20px", borderRadius: "10px" })} key={seaBeanEntry.id}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        {seaBeanEntry.storedFileIds?.map((storedFileId) => {
-                            return (
-                                <ImageDiv
-                                    key={storedFileId}
-                                    storedFileId={storedFileId}
-                                />
-                            )
-                        })}
-                    </div>
-                    <div style={{ fontSize: "20px", marginTop: seaBeanEntry.storedFileIds?.length > 0 ? "10px" : ""}}>
-                        <strong>{creator.username}</strong> found a <strong>{seaBean.name}</strong> on <strong>{entryDateString}</strong>
-                    </div>
-                    {!!seaBeanEntry.notes && <>
-                        <div style={{padding: "10px 15px", backgroundColor: "#232b3b", borderRadius: "12px", margin: "10px 0 0 0"}}>
-                            {seaBeanEntry.notes}
+                    <div style={{ display: "flex", gap: "20px" }}>
+                        <div style={{ height: "45px", aspectRatio: "1", borderRadius: "50px", backgroundColor: "gray" }}></div>
+                        <div>
+                            <div style={{ fontSize: "20px", marginTop: seaBeanEntry.storedFileIds?.length > 0 ? "10px" : "" }}>
+                                <strong>{creator.username}</strong> found a <strong>{seaBean.name}</strong> on <strong>{entryDateString}</strong>
+                            </div>
+                            {!!seaBeanEntry.notes && <>
+                                <div style={{ padding: "10px 15px", backgroundColor: "#232b3b", borderRadius: "12px", margin: "10px 0 0 0" }}>
+                                    {seaBeanEntry.notes}
+                                </div>
+                            </>}
+                            {seaBeanEntry.storedFileIds?.length > 0 ? <>
+                                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "20px" }}>
+                                    {seaBeanEntry.storedFileIds?.map((storedFileId) => {
+                                        return (
+                                            <ImageDiv
+                                                key={storedFileId}
+                                                storedFileId={storedFileId}
+                                            />
+                                        )
+                                    })}
+                                </div>
+                            </> : null}
                         </div>
-                    </>}
+                    </div>
                 </div>
             )
         })}
@@ -267,6 +274,7 @@ export default function Home() {
     }
 
     return <>
+    <div style={{fontSize: "30px"}}>Home</div>
         <SeaBeanEntryForm
             key={seaBeanEntryFormKey}
             handleSeaBeanEntryCreated={handleSeaBeanEntryCreated}
