@@ -193,9 +193,9 @@ function SeaBeanEntryList({ users, seaBeanEntries, setSeaBeanEntries, seaBeans }
             return (
                 <div style={({ marginBottom: "25px", boxShadow: "3px 3px 6px #00000030;", backgroundColor: "#1b1d21", padding: "20px", borderRadius: "10px" })} key={seaBeanEntry.id}>
                     <div style={{ display: "flex", gap: "20px" }}>
-                        <div style={{ height: "45px", aspectRatio: "1", borderRadius: "50px", backgroundColor: "gray" }}></div>
+                        <div style={{ height: "40px", aspectRatio: "1", borderRadius: "50px", backgroundColor: "gray" }}></div>
                         <div>
-                            <div style={{ fontSize: "20px", marginTop: seaBeanEntry.storedFileIds?.length > 0 ? "10px" : "" }}>
+                            <div style={{ fontSize: "16px", marginTop: "10px" }}>
                                 <strong>{creator.username}</strong> found a <strong>{seaBean.name}</strong> on <strong>{entryDateString}</strong>
                             </div>
                             {!!seaBeanEntry.notes && <>
