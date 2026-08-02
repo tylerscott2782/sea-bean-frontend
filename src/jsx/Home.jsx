@@ -4,7 +4,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 function ImageDiv({ storedFileId }) {
     return (
-        <div style={{ width: "200px", aspectRatio: "1" }}>
+        <div style={{ width: "200px" }}>
             <img
                 src={`${API_BASE_URL}/storedFile/download/${storedFileId}`}
                 loading="lazy"
@@ -14,7 +14,7 @@ function ImageDiv({ storedFileId }) {
     )
 }
 
-function SeaBeanSelector({ seaBeans, handleSeaBeanSelected }) {
+function SeaBeanSelector({ value, seaBeans, handleSeaBeanSelected }) {
     function onChangeSelect(e) {
         const id = e.target.value
         const selectedSeaBean = seaBeans.find(sb => sb.id === id)
@@ -22,7 +22,7 @@ function SeaBeanSelector({ seaBeans, handleSeaBeanSelected }) {
     }
 
     return <>
-        <select onChange={onChangeSelect}>
+        <select onChange={onChangeSelect} value={value}>
             {seaBeans.map((seaBean) => {
                 return (
                     <option
@@ -73,22 +73,13 @@ function FileUploadForm({ handleFileUploaded }) {
 }
 
 function SeaBeanEntryForm({ seaBeans, handleSeaBeanEntryCreated }) {
-    const [seaBeanId, setSeaBeanId] = useState('')
+    const [seaBeanId, setSeaBeanId] = useState(seaBeans[0].id)
     const [notes, setNotes] = useState('')
-    const [latitude, setLatitude] = useState('')
-    const [longitude, setLongitude] = useState('')
-    const [entryDate, setEntryDate] = useState(new Date().toISOString())
+    const [latitude, setLatitude] = useState(null)
+    const [longitude, setLongitude] = useState(null)
+    // const [entryDate, setEntryDate] = useState()
     const [storedFiles, setStoredFiles] = useState([])
     const [isSubmitting, setIsSubmitting] = useState(false)
-
-    function clearFields() {
-        setSeaBeanId('')
-        setNotes('')
-        setLatitude('')
-        setLongitude('')
-        setEntryDate(new Date().toISOString())
-        setStoredFiles([])
-    }
 
     function handleClickUseLocation() {
         navigator.geolocation.getCurrentPosition((position) => {
@@ -114,14 +105,13 @@ function SeaBeanEntryForm({ seaBeans, handleSeaBeanEntryCreated }) {
                 notes,
                 latitude,
                 longitude,
-                entryDate,
+                entryDate: (new Date().toISOString()),
                 storedFileIds: storedFiles.map(sf => sf.id)
             })
         })
         setIsSubmitting(false)
 
         if (!response.ok) return
-        clearFields()
 
         const responseJson = await response.json()
         handleSeaBeanEntryCreated?.(responseJson)
@@ -137,6 +127,7 @@ function SeaBeanEntryForm({ seaBeans, handleSeaBeanEntryCreated }) {
         <div>
             <div>Sea Bean:</div>
             <SeaBeanSelector
+                value={seaBeanId}
                 seaBeans={seaBeans}
                 handleSeaBeanSelected={(seaBean) => setSeaBeanId(seaBean.id)}
             />
@@ -147,8 +138,6 @@ function SeaBeanEntryForm({ seaBeans, handleSeaBeanEntryCreated }) {
             <div>Longitude:</div>
             <input type="number" value={longitude} onChange={(e) => setLongitude(e.target.value)} />
             <button onClick={handleClickUseLocation}>Use my location</button>
-            <div>Entry Date:</div>
-            <input type="text" value={entryDate} onChange={(e) => setEntryDate(e.target.value)} />
             <br />
             <div>Files:</div>
             {storedFiles.map((storedFile) => {
@@ -165,7 +154,7 @@ function SeaBeanEntryForm({ seaBeans, handleSeaBeanEntryCreated }) {
     </>
 }
 
-function SeaBeanEntryList({ seaBeanEntries, setSeaBeanEntries, seaBeans }) {
+function SeaBeanEntryList({ users, seaBeanEntries, setSeaBeanEntries, seaBeans }) {
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
@@ -189,16 +178,21 @@ function SeaBeanEntryList({ seaBeanEntries, setSeaBeanEntries, seaBeans }) {
 
     return <>
         {seaBeanEntries.map((seaBeanEntry) => {
+            const creator = users.find(u => seaBeanEntry.creatorId === u.id) ?? { name: "Unknown User" }
+            const seaBean = seaBeans?.find(sb => sb.id === seaBeanEntry.seaBeanId)
+            const entryDate = new Date(seaBeanEntry.entryDate)
+            const entryDateString = new Intl.DateTimeFormat(undefined, {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: "numeric",
+                minute: "numeric"
+            }).format(entryDate)
+
             return (
-                <div style={({ marginBottom: "20px" })} key={seaBeanEntry.id}>
-                    <div>Id: {seaBeanEntry.id}</div>
-                    <div>Sea Bean: {seaBeans?.find(sb => sb.id === seaBeanEntry.seaBeanId)?.name}</div>
-                    <div>Notes: {seaBeanEntry.notes}</div>
-                    <div>Latitude: {seaBeanEntry.latitude}</div>
-                    <div>Longitude: {seaBeanEntry.longitude}</div>
-                    <div>Date Created: {seaBeanEntry.dateCreated}</div>
-                    <div>Entry Date: {seaBeanEntry.entryDate}</div>
-                    <div style={{ display: "flex" }}>
+                <div style={({ marginBottom: "25px", boxShadow: "3px 3px 6px #00000030;", backgroundColor: "#1b1d21", padding: "20px", borderRadius: "10px" })} key={seaBeanEntry.id}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                         {seaBeanEntry.storedFileIds?.map((storedFileId) => {
                             return (
                                 <ImageDiv
@@ -208,6 +202,14 @@ function SeaBeanEntryList({ seaBeanEntries, setSeaBeanEntries, seaBeans }) {
                             )
                         })}
                     </div>
+                    <div style={{ fontSize: "20px", marginTop: seaBeanEntry.storedFileIds?.length > 0 ? "10px" : ""}}>
+                        <strong>{creator.username}</strong> found a <strong>{seaBean.name}</strong> on <strong>{entryDateString}</strong>
+                    </div>
+                    {!!seaBeanEntry.notes && <>
+                        <div style={{padding: "10px 15px", backgroundColor: "#232b3b", borderRadius: "12px", margin: "10px 0 0 0"}}>
+                            {seaBeanEntry.notes}
+                        </div>
+                    </>}
                 </div>
             )
         })}
@@ -217,30 +219,62 @@ function SeaBeanEntryList({ seaBeanEntries, setSeaBeanEntries, seaBeans }) {
 export default function Home() {
     const [seaBeanEntries, setSeaBeanEntries] = useState([])
     const [seaBeans, setSeaBeans] = useState([])
+    const [users, setUsers] = useState([])
+    const [loaded, setLoaded] = useState(false)
+    const [seaBeanEntryFormKey, setSeaBeanEntryFormKey] = useState(0)
 
     useEffect(() => {
-        async function getSeaBeans() {
-            const response = await fetch(`${API_BASE_URL}/seaBean`, {
-                credentials: "include"
-            })
-            const responseJson = await response.json();
-            setSeaBeans(responseJson)
+        async function load() {
+            const loadSeaBeans = async function () {
+                const response = await fetch(`${API_BASE_URL}/seaBean`, {
+                    credentials: "include"
+                })
+                return await response.json();
+            }
+
+            const loadUsers = async function () {
+                const response = await fetch(`${API_BASE_URL}/user`, {
+                    credentials: "include"
+                })
+                return await response.json();
+            }
+
+            const [
+                seaBeanResponse,
+                userResponse
+            ] = await Promise.all([
+                loadSeaBeans(),
+                loadUsers()
+            ])
+
+            setSeaBeans(seaBeanResponse)
+            setUsers(userResponse)
+            setLoaded(true)
         }
 
-        getSeaBeans()
+        load()
     }, [])
 
     function handleSeaBeanEntryCreated(seaBeanEntry) {
+        setSeaBeanEntryFormKey(seaBeanEntryFormKey + 1)
         setSeaBeanEntries([seaBeanEntry, ...seaBeanEntries])
+    }
+
+    if (!loaded) {
+        return <>
+            Loading...
+        </>
     }
 
     return <>
         <SeaBeanEntryForm
+            key={seaBeanEntryFormKey}
             handleSeaBeanEntryCreated={handleSeaBeanEntryCreated}
             seaBeans={seaBeans}
         />
         <br />
         <SeaBeanEntryList
+            users={users}
             seaBeans={seaBeans}
             seaBeanEntries={seaBeanEntries}
             setSeaBeanEntries={setSeaBeanEntries}
