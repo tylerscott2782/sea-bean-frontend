@@ -204,7 +204,7 @@ function SeaBeanEntryList({ users, seaBeanEntries, setSeaBeanEntries, seaBeans }
                                 </div>
                             </>}
                             {seaBeanEntry.storedFileIds?.length > 0 ? <>
-                                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "20px" }}>
+                                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", marginTop: "20px" }}>
                                     {seaBeanEntry.storedFileIds?.map((storedFileId) => {
                                         return (
                                             <ImageDiv
