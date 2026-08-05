@@ -5,6 +5,6 @@ body {
     height: 100dvh;
 }
 
-#root * {
+* {
     box-sizing: border-box;
 }
