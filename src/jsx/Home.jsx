@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { SeaBeanEntryForm, ImageDiv } from "./SeaBeanEntryForm"
+import { Modal } from "./Modal"
 import { useSeaBeans } from "./SeaBeansContext"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -80,6 +81,7 @@ export default function Home() {
     const [users, setUsers] = useState([])
     const [loaded, setLoaded] = useState(false)
     const [seaBeanEntryFormKey, setSeaBeanEntryFormKey] = useState(0)
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     useEffect(() => {
         async function load() {
@@ -100,6 +102,7 @@ export default function Home() {
     }, [])
 
     function handleSeaBeanEntryCreated(seaBeanEntry) {
+        setIsModalOpen(false)
         setSeaBeanEntryFormKey(seaBeanEntryFormKey + 1)
         setSeaBeanEntries([seaBeanEntry, ...seaBeanEntries])
     }
@@ -112,15 +115,38 @@ export default function Home() {
 
     return <>
         <div style={{ fontSize: "30px" }}>Home</div>
-        <SeaBeanEntryForm
-            key={seaBeanEntryFormKey}
-            handleSeaBeanEntryCreated={handleSeaBeanEntryCreated}
-        />
         <br />
         <SeaBeanEntryList
             users={users}
             seaBeanEntries={seaBeanEntries}
             setSeaBeanEntries={setSeaBeanEntries}
         />
+
+        <Modal
+            isOpen={isModalOpen}
+            setIsOpen={setIsModalOpen}
+        >
+            <SeaBeanEntryForm
+                key={seaBeanEntryFormKey}
+                handleSeaBeanEntryCreated={handleSeaBeanEntryCreated}
+            />
+        </Modal>
+
+        <button
+            style={{
+                cursor: "pointer",
+                fontSize: "20px",
+                backgroundColor: "#c0ddff",
+                borderRadius: "10px",
+                marginBottom: "15px",
+                padding: "10px 20px",
+                position: "fixed",
+                bottom: "10px",
+                right: "30px"
+            }}
+            onClick={() => setIsModalOpen(!isModalOpen)}
+        >
+            + New Sea Bean Entry
+        </button>
     </>
 }
