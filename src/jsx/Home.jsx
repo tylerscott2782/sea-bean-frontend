@@ -5,7 +5,7 @@ import { useSeaBeans } from "./SeaBeansContext"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
-function SeaBeanEntryList({ users, seaBeanEntries, setSeaBeanEntries }) {
+function SeaBeanEntryList({ users, seaBeanEntries, setSeaBeanEntries, handleEmptyViewClick }) {
     const { seaBeans } = useSeaBeans()
 
     const [isLoading, setIsLoading] = useState(true)
@@ -26,6 +26,18 @@ function SeaBeanEntryList({ users, seaBeanEntries, setSeaBeanEntries }) {
     if (isLoading) {
         return <>
             Loading Sea Beans...
+        </>
+    }
+
+    if (seaBeanEntries.length == 0) {
+        return <>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "100px", gap: "10px" }}>
+                <div style={{ fontSize: "20px" }}>There are no sea bean entries yet.</div>
+                <div
+                    style={{ cursor: "pointer", textDecoration: "underline" }}
+                    onClick={handleEmptyViewClick}
+                >Be the first to bean</div>
+            </div>
         </>
     }
 
@@ -120,6 +132,7 @@ export default function Home() {
             users={users}
             seaBeanEntries={seaBeanEntries}
             setSeaBeanEntries={setSeaBeanEntries}
+            handleEmptyViewClick={() => setIsModalOpen(!isModalOpen)}
         />
 
         <Modal

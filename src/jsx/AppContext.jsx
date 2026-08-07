@@ -1,9 +1,12 @@
 import { SeaBeansProvider } from "./SeaBeansProvider";
+import { CurrentUserProvider} from "./CurrentUserProvider";
 
 export default function AppContext({ children }) {
     return <>
-        <SeaBeansProvider>
-            {children}
-        </SeaBeansProvider>
+        <CurrentUserProvider>
+            <SeaBeansProvider>
+                {children}
+            </SeaBeansProvider>
+        </CurrentUserProvider>
     </>
 }

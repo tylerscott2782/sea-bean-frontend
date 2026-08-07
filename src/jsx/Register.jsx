@@ -58,13 +58,15 @@ export default function Register() {
     }
 
     return <>
-        <h1>Register</h1>
-        <input placeholder="Username" type="text" value={username} onChange={handleChangeUsername} />
-        <input placeholder="Password" type="password" value={password1} onChange={handleChangePassword1} />
-        <input placeholder="Verfiy Password" type="password" value={password2} onChange={handleChangePassword2} />
-        <button onClick={handleCreateAccountButtonClick}>Create Account</button>
-        <div>{message}</div>
-        <br />
-        <Link to="/login">Back to Login</Link>
+        <div style={{ margin: "100px auto", width: "fit-content" }}>
+            <h1>Register</h1>
+            <input placeholder="Username" type="text" value={username} onChange={handleChangeUsername} />
+            <input placeholder="Password" type="password" value={password1} onChange={handleChangePassword1} />
+            <input placeholder="Verfiy Password" type="password" value={password2} onChange={handleChangePassword2} />
+            <button onClick={handleCreateAccountButtonClick}>Create Account</button>
+            <div>{message}</div>
+            <br />
+            <Link to="/login">Back to Login</Link>
+        </div >
     </>
 }

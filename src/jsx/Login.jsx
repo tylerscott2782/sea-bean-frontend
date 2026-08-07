@@ -78,12 +78,14 @@ export default function Login() {
     }
 
     return <>
-        <h1>Login</h1>
-        <input placeholder="Username" type="text" value={username} onChange={handleChangeUsername} />
-        <input placeholder="Password" type="password" value={password} onChange={handleChangePassword} />
-        <button onClick={handleButtonClick}>Submit</button>
-        <div>{message}</div>
-        <br />
-        <Link to="/register">Register</Link>
+        <div style={{ margin: "100px auto", width: "fit-content" }}>
+            <h1>Login</h1>
+            <input placeholder="Username" type="text" value={username} onChange={handleChangeUsername} />
+            <input placeholder="Password" type="password" value={password} onChange={handleChangePassword} />
+            <button onClick={handleButtonClick}>Submit</button>
+            <div>{message}</div>
+            <br />
+            <Link to="/register">Register</Link>
+        </div>
     </>
 }
