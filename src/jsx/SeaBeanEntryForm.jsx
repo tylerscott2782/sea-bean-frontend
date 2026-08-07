@@ -7,7 +7,7 @@ export function ImageDiv({ storedFileId }) {
     return (
         <div style={{ width: "200px" }}>
             <img
-                src={`${API_BASE_URL}/storedFile/download/${storedFileId}`}
+                src={`${API_BASE_URL}/storedFile/download/${storedFileId}/thumbnail`}
                 loading="lazy"
                 style={{ width: "100%" }}
             />

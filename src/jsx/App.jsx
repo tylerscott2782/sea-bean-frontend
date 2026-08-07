@@ -5,7 +5,6 @@ import Register from './Register'
 import Home from './Home'
 import Profile from './Profile'
 import NavBar from './NavBar'
-import AppContext from './AppContext'
 
 function App() {
   return <>
@@ -14,7 +13,6 @@ function App() {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Playpen+Sans:wght@100..800&display=swap" rel="stylesheet"></link>
 
-    <AppContext>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
@@ -28,7 +26,6 @@ function App() {
 
         </Routes>
       </BrowserRouter >
-    </AppContext>
   </>
 }
 
