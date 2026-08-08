@@ -43,7 +43,7 @@ function SeaBeanEntryList({ users, seaBeanEntries, setSeaBeanEntries, handleEmpt
 
     return <>
         {seaBeanEntries.map((seaBeanEntry) => {
-            const creator = users.find(u => seaBeanEntry.creatorId === u.id) ?? { name: "Unknown User" }
+            const creator = users.find(u => seaBeanEntry.creatorId === u.id) ?? { displayName: "Unknown User" }
             const seaBean = seaBeans?.find(sb => sb.id === seaBeanEntry.seaBeanId)
             const entryDate = new Date(seaBeanEntry.entryDate)
             const entryDateString = new Intl.DateTimeFormat(undefined, {
@@ -58,10 +58,16 @@ function SeaBeanEntryList({ users, seaBeanEntries, setSeaBeanEntries, handleEmpt
             return (
                 <div style={({ marginBottom: "25px", boxShadow: "3px 3px 6px #00000030", backgroundColor: "#1b1d21", padding: "15px 25px 20px 15px", borderRadius: "10px" })} key={seaBeanEntry.id}>
                     <div style={{ display: "flex", gap: "12px" }}>
-                        <div style={{ height: "38px", aspectRatio: "1", borderRadius: "50px", backgroundColor: "gray" }}></div>
+                        <div style={{ 
+                            height: "38px", 
+                            aspectRatio: "1", 
+                            borderRadius: "50px", 
+                            backgroundColor: "gray",
+                            ...(creator?.profilePictureId ? { background: `url("${API_BASE_URL}/storedFile/download/${creator.profilePictureId}/thumbnail") center center / cover no-repeat` } : {})
+                        }}></div>
                         <div style={{ width: "100%" }}>
                             <div style={{ fontSize: "16px", marginTop: "8px" }}>
-                                <strong>{creator.username}</strong> found a <strong>{seaBean?.name}</strong> on <strong>{entryDateString}</strong>
+                                <strong>{creator.displayName}</strong> found a <strong>{seaBean?.name}</strong> on <strong>{entryDateString}</strong>
                             </div>
                             {!!seaBeanEntry.notes && <>
                                 <div style={{ padding: "10px 15px", backgroundColor: "#232b3b", borderRadius: "12px", margin: "10px 0 0 0" }}>
